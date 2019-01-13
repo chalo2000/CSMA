@@ -1,15 +1,15 @@
 //
-//  ViewController.swift
+//  LoginViewController.swift
 //  CSMA
 //
-//  Created by Gonzalo Gonzalez on 1/7/19.
+//  Created by Gonzalo Gonzalez on 1/9/19.
 //  Copyright © 2019 Gonzalo Gonzalez. All rights reserved.
 //
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class LoginViewController: UIViewController {
+    
     //Visuals
     var usernameLabel: UILabel!
     var usernameTextField: UITextField!
@@ -30,6 +30,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.init(red: 153/255, green: 230/255, blue: 255/255, alpha: 1)
+        navigationController?.isNavigationBarHidden = true
         
         usernameLabel = UILabel()
         usernameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -65,13 +66,13 @@ class ViewController: UIViewController {
         view.addSubview(loginButton)
         
         emptyFieldAlert = UIAlertController(title: "Empty fields",
-                                               message: "Please fill out all fields before logging in",
-                                               preferredStyle: .alert)
+                                            message: "Please fill out all fields before logging in",
+                                            preferredStyle: .alert)
         emptyFieldAlert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
         
         incorrectLoginInfoAlert = UIAlertController(title: "Incorrect Login Information",
-                                               message: "Please enter a valid username and password",
-                                               preferredStyle: .alert)
+                                                    message: "Please enter a valid username and password",
+                                                    preferredStyle: .alert)
         incorrectLoginInfoAlert.addAction(UIAlertAction(title: "Oops", style: .default, handler: nil))
         
         successfulLoginAlert = UIAlertController(title: "Welcome",
@@ -133,16 +134,11 @@ class ViewController: UIViewController {
             let indexOfUsername = usernames.firstIndex(of: enteredUsername!)
             
             if (indexOfUsername != nil && passwords[indexOfUsername!] == enteredPassword) {
-                present(successfulLoginAlert, animated: true, completion: nil)
+                navigationController?.pushViewController(TabSetupViewController(), animated: true)
             } else {
                 present(incorrectLoginInfoAlert, animated: true, completion: nil)
             }
             
         }
-        
-        
     }
-
-
 }
-
