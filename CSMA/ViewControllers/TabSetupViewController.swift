@@ -17,7 +17,7 @@ class TabSetupViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
         createTabBarController()
     }
@@ -41,6 +41,7 @@ class TabSetupViewController: UIViewController {
         profileView.tabBarItem.title = "Profile"
         
         tabs.viewControllers = [searchView, mainFeedView, profileView]
+        tabs.selectedIndex = 1
         
         view.addSubview(tabs.view)
 

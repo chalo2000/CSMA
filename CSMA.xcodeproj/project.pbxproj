@@ -10,6 +10,8 @@
 		872C7BE721EC217400C92765 /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872C7BE621EC217400C92765 /* FeedCollectionViewCell.swift */; };
 		872C7BE921EC265A00C92765 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872C7BE821EC265A00C92765 /* Post.swift */; };
 		872C7BEE21ED54DC00C92765 /* PostCreationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872C7BED21ED54DC00C92765 /* PostCreationViewController.swift */; };
+		872C7BF021F0488E00C92765 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872C7BEF21F0488E00C92765 /* Person.swift */; };
+		872C7BF221F19AF100C92765 /* PersonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872C7BF121F19AF100C92765 /* PersonTableViewCell.swift */; };
 		87AE095921E3F347001ADBEC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AE095821E3F347001ADBEC /* AppDelegate.swift */; };
 		87AE095E21E3F347001ADBEC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87AE095C21E3F347001ADBEC /* Main.storyboard */; };
 		87AE096021E3F349001ADBEC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87AE095F21E3F349001ADBEC /* Assets.xcassets */; };
@@ -28,6 +30,8 @@
 		872C7BE621EC217400C92765 /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		872C7BE821EC265A00C92765 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		872C7BED21ED54DC00C92765 /* PostCreationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCreationViewController.swift; sourceTree = "<group>"; };
+		872C7BEF21F0488E00C92765 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		872C7BF121F19AF100C92765 /* PersonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTableViewCell.swift; sourceTree = "<group>"; };
 		87AE095521E3F347001ADBEC /* CSMA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CSMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87AE095821E3F347001ADBEC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		87AE095D21E3F347001ADBEC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -98,8 +102,17 @@
 			isa = PBXGroup;
 			children = (
 				872C7BE821EC265A00C92765 /* Post.swift */,
+				872C7BEF21F0488E00C92765 /* Person.swift */,
 			);
 			path = Objects;
+			sourceTree = "<group>";
+		};
+		872C7BF321F19AFC00C92765 /* TableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				872C7BF121F19AF100C92765 /* PersonTableViewCell.swift */,
+			);
+			path = TableViewCell;
 			sourceTree = "<group>";
 		};
 		87AE094C21E3F347001ADBEC = {
@@ -125,6 +138,7 @@
 			children = (
 				872C7BEA21EC266300C92765 /* ViewControllers */,
 				872C7BEB21EC268400C92765 /* CollectionViewCells */,
+				872C7BF321F19AFC00C92765 /* TableViewCell */,
 				872C7BEC21EC269300C92765 /* Objects */,
 				87AE095C21E3F347001ADBEC /* Main.storyboard */,
 				87AE095F21E3F349001ADBEC /* Assets.xcassets */,
@@ -259,9 +273,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				872C7BF021F0488E00C92765 /* Person.swift in Sources */,
 				87AE097321E7EFD4001ADBEC /* TabSetupViewController.swift in Sources */,
 				87AE096B21E6A019001ADBEC /* LoginViewController.swift in Sources */,
 				87AE096D21E6A90D001ADBEC /* MainFeedViewController.swift in Sources */,
+				872C7BF221F19AF100C92765 /* PersonTableViewCell.swift in Sources */,
 				872C7BE921EC265A00C92765 /* Post.swift in Sources */,
 				87AE097121E6A9F3001ADBEC /* ProfileViewController.swift in Sources */,
 				87AE096F21E6A9CA001ADBEC /* SearchViewController.swift in Sources */,
