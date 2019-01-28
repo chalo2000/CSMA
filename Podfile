@@ -7,5 +7,5 @@ target 'CSMA' do
 
   # Pods for CSMA
   pod 'Firebase/Core'
-
+  pod 'Firebase/Database'
 end

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
 class LoginViewController: UIViewController {
     
@@ -16,54 +17,80 @@ class LoginViewController: UIViewController {
     var passwordLabel: UILabel!
     var passwordTextField: UITextField!
     var loginButton: UIButton!
+    var signupButton: UIButton!
+    var loginSignupButton: UIButton!
+    var loginSignupSwitcherButton: UIButton!
     
     //Data
-    var usernames = ["Chalo2000", "Papi"]
-    var passwords = ["Cornell", "123abc"]
+    var ref: DatabaseReference!
     
     //Alerts
     var emptyFieldAlert: UIAlertController!
     var incorrectLoginInfoAlert: UIAlertController!
     var successfulLoginAlert: UIAlertController!
+    var usernameExistsAlert: UIAlertController!
+    var successfulSignupAlert: UIAlertController!
+    
+    //Colors
+    let burgundy = UIColor.init(red: 128/255, green: 0/255, blue: 32/255, alpha: 1)
+    let carnelian = UIColor.init(red: 179/255, green: 27/255, blue: 27/255, alpha: 1)
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.init(red: 153/255, green: 230/255, blue: 255/255, alpha: 1)
+        view.backgroundColor = burgundy
         navigationController?.isNavigationBarHidden = true
+        ref = Database.database().reference()
         
         usernameLabel = UILabel()
         usernameLabel.translatesAutoresizingMaskIntoConstraints = false
         usernameLabel.text = "Username"
+        usernameLabel.textColor = .white
+        usernameLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         usernameLabel.textAlignment = .center
         view.addSubview(usernameLabel)
         
         usernameTextField = UITextField()
         usernameTextField.translatesAutoresizingMaskIntoConstraints = false
-        usernameTextField.placeholder = "Enter your username"
+        usernameTextField.attributedPlaceholder = NSAttributedString(string: "Enter your username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white]) //allows us to create a placeholder with white text color
+        usernameTextField.backgroundColor = carnelian
         usernameTextField.borderStyle = .roundedRect
         view.addSubview(usernameTextField)
         
         passwordLabel = UILabel()
         passwordLabel.translatesAutoresizingMaskIntoConstraints = false
         passwordLabel.text = "Password"
+        passwordLabel.textColor = .white
+        passwordLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         passwordLabel.textAlignment = .center
         view.addSubview(passwordLabel)
         
         passwordTextField = UITextField()
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
-        passwordTextField.placeholder = "Enter your password"
+        passwordTextField.attributedPlaceholder = NSAttributedString(string: "Enter your password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white]) //allows us to create a placeholder with white text color
+        passwordTextField.backgroundColor = carnelian
         passwordTextField.borderStyle = .roundedRect
         view.addSubview(passwordTextField)
         
-        loginButton = UIButton()
-        loginButton.translatesAutoresizingMaskIntoConstraints = false
-        loginButton.backgroundColor = .gray
-        loginButton.setTitleColor(.red, for: .normal)
-        loginButton.setTitle("Login", for: .normal)
-        loginButton.addTarget(self, action: #selector(attemptLogin), for: .touchUpInside)
-        loginButton.layer.cornerRadius = 10
-        view.addSubview(loginButton)
+        loginSignupButton = UIButton()
+        loginSignupButton.translatesAutoresizingMaskIntoConstraints = false
+        loginSignupButton.backgroundColor = .white
+        loginSignupButton.setTitleColor(carnelian, for: .normal)
+        loginSignupButton.setTitle("Login", for: .normal)
+        loginSignupButton.addTarget(self, action: #selector(processAction), for: .touchUpInside)
+        loginSignupButton.layer.cornerRadius = 10
+        view.addSubview(loginSignupButton)
+        
+        loginSignupSwitcherButton = UIButton()
+        loginSignupSwitcherButton.translatesAutoresizingMaskIntoConstraints = false
+        loginSignupSwitcherButton.backgroundColor = .clear
+        loginSignupSwitcherButton.setTitleColor(.gray, for: .normal)
+        loginSignupSwitcherButton.setTitle("Don't have an account yet? Press here to sign up!", for: .normal)
+        loginSignupSwitcherButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        loginSignupSwitcherButton.titleLabel?.textAlignment = .center
+        loginSignupSwitcherButton.addTarget(self, action: #selector(switchMode), for: .touchUpInside)
+        view.addSubview(loginSignupSwitcherButton)
+        
         
         emptyFieldAlert = UIAlertController(title: "Empty fields",
                                             message: "Please fill out all fields before logging in",
@@ -80,6 +107,16 @@ class LoginViewController: UIViewController {
                                                  preferredStyle: .alert)
         successfulLoginAlert.addAction(UIAlertAction(title: "Great!", style: .default, handler: nil))
         
+        usernameExistsAlert = UIAlertController(title: "Username Already Exists",
+                                               message: "The username you have entered already exists. Try using the login button",
+                                               preferredStyle: .alert)
+        usernameExistsAlert.addAction(UIAlertAction(title: "Alright", style: .default, handler: nil))
+        
+        successfulSignupAlert = UIAlertController(title: "Signup Successful",
+                                                message: "You have successfully signed up for CSMA! You can now log in.",
+                                                preferredStyle: .alert)
+        successfulSignupAlert.addAction(UIAlertAction(title: "Great", style: .default, handler: nil))
+        
         setupConstraints()
         
     }
@@ -87,58 +124,114 @@ class LoginViewController: UIViewController {
     func setupConstraints(){
         
         NSLayoutConstraint.activate([
-            usernameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            usernameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             usernameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
             usernameLabel.widthAnchor.constraint(equalToConstant: 100),
             usernameLabel.heightAnchor.constraint(equalToConstant: 25)
             ])
         
         NSLayoutConstraint.activate([
-            usernameTextField.centerXAnchor.constraint(equalTo: usernameLabel.centerXAnchor),
+            usernameTextField.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor),
             usernameTextField.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 10),
-            usernameTextField.widthAnchor.constraint(equalToConstant: 200),
-            usernameTextField.heightAnchor.constraint(equalToConstant: 25)
+            usernameTextField.widthAnchor.constraint(equalToConstant: 350),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
             ])
         
         NSLayoutConstraint.activate([
-            passwordLabel.centerXAnchor.constraint(equalTo: usernameTextField.centerXAnchor),
+            passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             passwordLabel.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 100),
             passwordLabel.widthAnchor.constraint(equalToConstant: 100),
             passwordLabel.heightAnchor.constraint(equalToConstant: 25)
             ])
         
         NSLayoutConstraint.activate([
-            passwordTextField.centerXAnchor.constraint(equalTo: passwordLabel.centerXAnchor),
+            passwordTextField.leadingAnchor.constraint(equalTo: passwordLabel.leadingAnchor),
             passwordTextField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
-            passwordTextField.widthAnchor.constraint(equalToConstant: 200),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 25)
+            passwordTextField.widthAnchor.constraint(equalToConstant: 350),
+            passwordTextField.heightAnchor.constraint(equalToConstant: 40)
             ])
         
         NSLayoutConstraint.activate([
-            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loginButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-            loginButton.widthAnchor.constraint(equalToConstant: 50),
-            loginButton.heightAnchor.constraint(equalToConstant: 25)
+            loginSignupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loginSignupButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            loginSignupButton.widthAnchor.constraint(equalToConstant: 300),
+            loginSignupButton.heightAnchor.constraint(equalToConstant: 40)
             ])
         
+        NSLayoutConstraint.activate([
+            loginSignupSwitcherButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loginSignupSwitcherButton.topAnchor.constraint(equalTo: loginSignupButton.bottomAnchor, constant: 10),
+            loginSignupSwitcherButton.widthAnchor.constraint(equalTo: view.widthAnchor),
+            loginSignupSwitcherButton.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        
+    }
+    
+    @objc func processAction(){
+        if (loginSignupButton.currentTitle == "Login"){
+            attemptLogin()
+        } else if (loginSignupButton.currentTitle == "Sign Up"){
+            attemptSignup()
+        } else {
+            print("Something went wrong in processAction")
+        }
+    }
+    
+    @objc func switchMode(){
+        if (loginSignupButton.currentTitle == "Login"){
+            usernameTextField.attributedPlaceholder = NSAttributedString(string: "Create your username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+            passwordTextField.attributedPlaceholder = NSAttributedString(string: "Create your password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+            loginSignupButton.setTitle("Sign Up", for: .normal)
+            loginSignupSwitcherButton.setTitle("Already have an account? Press here to login!", for: .normal)
+        } else {
+            usernameTextField.attributedPlaceholder = NSAttributedString(string: "Enter your username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+            passwordTextField.attributedPlaceholder = NSAttributedString(string: "Enter your password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+            loginSignupButton.setTitle("Login", for: .normal)
+            loginSignupSwitcherButton.setTitle("Don't have an account yet? Press here to sign up!", for: .normal)
+        }
     }
     
     @objc func attemptLogin(){
         let enteredUsername = usernameTextField.text
         let enteredPassword = passwordTextField.text
-        
+
         if (enteredUsername == "" || enteredPassword == ""){
             present(emptyFieldAlert, animated: true, completion: nil)
         } else {
-            
-            let indexOfUsername = usernames.firstIndex(of: enteredUsername!)
-            
-            if (indexOfUsername != nil && passwords[indexOfUsername!] == enteredPassword) {
-                navigationController?.pushViewController(TabSetupViewController(), animated: true)
-            } else {
-                present(incorrectLoginInfoAlert, animated: true, completion: nil)
+
+            ref.child("loginInfo").observe(.value) { snapshot in
+                for userID in snapshot.children.allObjects as! [DataSnapshot]{
+                    if (userID.childSnapshot(forPath: "username").value! as? String == enteredUsername && userID.childSnapshot(forPath: "password").value! as? String == enteredPassword){
+                self.navigationController?.pushViewController(TabSetupViewController(), animated: true)
+                        return
+                        //if the username and password match a combo in the database, log in
+                    }
+                }
+                //otherwise, present login error
+                self.present(self.incorrectLoginInfoAlert, animated: true, completion: nil)
             }
-            
+        }
+    }
+    
+    @objc func attemptSignup(){
+        let newUsername = usernameTextField.text!
+        let newPassword = passwordTextField.text!
+        
+        if (newUsername == "" || newPassword == ""){
+            present(emptyFieldAlert, animated: true, completion: nil)
+        } else{
+            ref.child("loginInfo").observe(.value) { snapshot in
+                for userID in snapshot.children.allObjects as! [DataSnapshot]{
+                    if (userID.childSnapshot(forPath: "username").value! as? String == newUsername){
+                        self.present(self.usernameExistsAlert, animated: true, completion: nil)
+                        return
+                        //if username already exists, gets out of closure
+                    }
+                }
+                //otherwise, add the new info into the database
+                self.ref.child("loginInfo").childByAutoId().setValue(["username": newUsername, "password": newPassword])
+                self.present(self.successfulSignupAlert, animated: true, completion: nil)
+            }
         }
     }
 }
