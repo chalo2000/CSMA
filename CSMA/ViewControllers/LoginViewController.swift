@@ -202,15 +202,33 @@ class LoginViewController: UIViewController {
             ref.child("loginInfo").observe(.value) { snapshot in
                 for userID in snapshot.children.allObjects as! [DataSnapshot]{
                     if (userID.childSnapshot(forPath: "username").value! as? String == enteredUsername && userID.childSnapshot(forPath: "password").value! as? String == enteredPassword){
-                self.navigationController?.pushViewController(TabSetupViewController(), animated: true)
+                        self.checkIfFirstLogin(for: userID.key)
                         return
-                        //if the username and password match a combo in the database, log in
+                        //if the username and password match a combo in the database, attempt a login
                     }
                 }
                 //otherwise, present login error
                 self.present(self.incorrectLoginInfoAlert, animated: true, completion: nil)
             }
         }
+    }
+    
+    func checkIfFirstLogin(for userID: String){
+        AppDelegate.CurrentUser.loggedUserID = userID //store the userID within the app for easy access
+        
+        ref.child("userInfo").observe(.value) { snapshot in
+            for possibleID in snapshot.children.allObjects as! [DataSnapshot]{
+                if (userID == possibleID.key){
+                    
+                    self.navigationController?.pushViewController(TabSetupViewController(), animated: true)
+                    return
+                    //if the userID matches an ID in userInfo, then their information is in the database so proceed with the login
+                }
+            }
+            //otherwise, present the first login screen to input information into the database
+            self.navigationController?.pushViewController(FirstLoginViewController(), animated: true)
+        }
+        
     }
     
     @objc func attemptSignup(){
